@@ -7,6 +7,6 @@ package org.icemimosa.xjson.parser;
  */
 public interface JSONParser {
 	
-	public String toJsonString(Object obj);
+	public String toJsonString();
 	
 }

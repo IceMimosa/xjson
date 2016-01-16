@@ -7,6 +7,6 @@ public class JSON {
 	
 	public static String getString(Object obj){
 		JSONParser parser = JSONParserFactory.getInstance().getParser(obj);
-		return parser.toJsonString(obj);
+		return parser.toJsonString();
 	}
 }

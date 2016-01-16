@@ -1,5 +1,7 @@
 package org.icemimosa.xjson.parser;
 
+import org.icemimosa.xjson.utils.TypeUtils;
+
 public class JSONParserFactory {
 
 	private static JSONParserFactory factory = new JSONParserFactory();
@@ -12,7 +14,12 @@ public class JSONParserFactory {
 	}
 
 	public JSONParser getParser(Object obj) {
-		JSONParser parser = new JavaBeanParser();
+		JSONParser parser = null;
+		if(TypeUtils.isPrimitive(obj)){
+			parser = new PrimitiveParser(obj);
+		}else{
+			parser = new JavaBeanParser(obj);
+		}
 		return parser;
 	}
 }

@@ -7,11 +7,15 @@ public class TestPrimitive {
 	public static void main(String[] args) {
 
 		Person p = new Person();
+		Person p1 = new Person();
 		p.setName("mimosa");
 		p.setAge(22);
-		System.out.println(JSON.getString(p));
+		p.setP(p1);
+		
 		int i = 1;
-		//System.out.println(TypeUtils.isPrimitive(p));
+		System.out.println(JSON.getString(p));
+		
+		//System.out.println(TypeUtils.isPrimitive(i));
 	}
 
 }
@@ -20,6 +24,7 @@ class Person {
 
 	private String name;
 	private int age;
+	private Person p;
 
 	public String getName() {
 		return name;
@@ -37,4 +42,11 @@ class Person {
 		this.age = age;
 	}
 
+	public Person getP() {
+		return p;
+	}
+
+	public void setP(Person p) {
+		this.p = p;
+	}
 }

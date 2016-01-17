@@ -1,3 +1,10 @@
+# Mine Settings
+/.settings
+/target
+.classpath
+.project
+.class
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

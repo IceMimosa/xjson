@@ -1,37 +1,52 @@
 package org.icemimosa.xjson;
 
-import org.icemimosa.xjson.utils.TypeUtils;
-
 public class TestPrimitive {
 
 	public static void main(String[] args) {
 
 		Person p = new Person();
-		Person p1 = new Person();
 		p.setName("mimosa");
+		p.setByteValue((byte) 1);
+		p.setShortValue((short) 2);
 		p.setAge(22);
-		p.setP(p1);
+		p.setLongValue(100);
+		p.setFloatValue(4.23f);
+		p.setDoubleValue(5.234);
+		p.setCharValue('a');
+		p.setBooleanValue(true);
 		
-		int i = 1;
-		System.out.println(JSON.getString(p));
-		
-		//System.out.println(TypeUtils.isPrimitive(i));
+		System.out.println(JSON.toJsonString(p));
 	}
 
 }
 
 class Person {
 
-	private String name;
+	private byte byteValue;
+	private short shortValue;
 	private int age;
-	private Person p;
+	private long longValue;
+	private float floatValue;
+	private double doubleValue;
+	private char charValue;
+	private boolean booleanValue;
 
-	public String getName() {
-		return name;
+	private String name;
+
+	public byte getByteValue() {
+		return byteValue;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setByteValue(byte byteValue) {
+		this.byteValue = byteValue;
+	}
+
+	public short getShortValue() {
+		return shortValue;
+	}
+
+	public void setShortValue(short shortValue) {
+		this.shortValue = shortValue;
 	}
 
 	public int getAge() {
@@ -42,11 +57,52 @@ class Person {
 		this.age = age;
 	}
 
-	public Person getP() {
-		return p;
+	public long getLongValue() {
+		return longValue;
 	}
 
-	public void setP(Person p) {
-		this.p = p;
+	public void setLongValue(long longValue) {
+		this.longValue = longValue;
 	}
+
+	public float getFloatValue() {
+		return floatValue;
+	}
+
+	public void setFloatValue(float floatValue) {
+		this.floatValue = floatValue;
+	}
+
+	public double getDoubleValue() {
+		return doubleValue;
+	}
+
+	public void setDoubleValue(double doubleValue) {
+		this.doubleValue = doubleValue;
+	}
+
+	public char getCharValue() {
+		return charValue;
+	}
+
+	public void setCharValue(char charValue) {
+		this.charValue = charValue;
+	}
+
+	public boolean isBooleanValue() {
+		return booleanValue;
+	}
+
+	public void setBooleanValue(boolean booleanValue) {
+		this.booleanValue = booleanValue;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 }

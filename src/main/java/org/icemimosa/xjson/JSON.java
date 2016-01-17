@@ -4,8 +4,7 @@ import org.icemimosa.xjson.parser.JSONParser;
 import org.icemimosa.xjson.parser.JSONParserFactory;
 
 public class JSON {
-	
-	public static String getString(Object obj){
+	public static String toJsonString(Object obj){
 		JSONParser parser = JSONParserFactory.getInstance().getParser(obj);
 		return parser.toJsonString();
 	}

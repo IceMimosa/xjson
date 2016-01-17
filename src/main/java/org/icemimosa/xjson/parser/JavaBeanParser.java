@@ -14,6 +14,11 @@ public class JavaBeanParser extends AbstractJSONParser {
 
 	@Override
 	public String toJsonString() {
+		if(obj == null){
+			return null;
+		}
+		
+		// 通过反射获取所有的方法
 		Method[] methods = obj.getClass().getMethods();
 		Map<String, Method> methodMap = new HashMap<String, Method>();
 		for (int i = 0; methods != null && i < methods.length; i++) {
@@ -21,6 +26,8 @@ public class JavaBeanParser extends AbstractJSONParser {
 				methodMap.put(methods[i].getName().substring(3), methods[i]);
 			}
 		}
+		
+		// 获取所有的成员变量
 		StringBuilder sb = new StringBuilder("{");
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (int i = 0; fields != null && i < fields.length; i++) {
@@ -30,20 +37,24 @@ public class JavaBeanParser extends AbstractJSONParser {
 			if(getMethod != null){
 				try {
 					getMethod.setAccessible(true);
+					// 变量名称的json串
+					JSONParser fieldNameParser = JSONParserFactory.getInstance().getParser(fieldName);
+					String fieldNameString = fieldNameParser.toJsonString();
+					// 值的json串
 					Object value = getMethod.invoke(obj);
-					if(value == null){
-						sb.append("\"").append(fieldName).append("\":null,");
-					}else{
-						JSONParser parser = JSONParserFactory.getInstance().getParser(value);
-						sb.append("\"").append(fieldName).append("\":").append(parser.toJsonString()).append(",");
-					}
+					JSONParser valueParser = JSONParserFactory.getInstance().getParser(value);
+					
+					sb.append(fieldNameString).append(":").append(valueParser.toJsonString()).append(",");
 					getMethod.setAccessible(false);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		String sbString = sb.substring(0, sb.length() - 1);
+		String sbString = sb.toString();
+		if(sbString.endsWith(",")){
+			sbString = sbString.substring(0, sb.length() - 1);
+		}
 		return sbString + "}";
 	}
 }

@@ -1,5 +1,6 @@
 package org.icemimosa.xjson.parser;
 
+import org.icemimosa.xjson.JsonConfig;
 import org.icemimosa.xjson.utils.TypeUtils;
 
 /**
@@ -18,16 +19,16 @@ public class JSONParserFactory {
 		return factory;
 	}
 
-	public JSONParser getParser(Object obj) {
+	public JSONParser getParser(Object obj, JsonConfig jsonConfig) {
 		JSONParser parser = null;
 		if(obj == null || TypeUtils.isPrimitive(obj)){
-			parser = new PrimitiveParser(obj);
+			parser = new PrimitiveParser(obj, jsonConfig);
 		}else if(TypeUtils.isCollectionOrArray(obj)){
-			parser = new CollectionParser(obj);
+			parser = new CollectionParser(obj, jsonConfig);
 		}else if(TypeUtils.isMap(obj)){
-			parser = new MapParser(obj);
+			parser = new MapParser(obj, jsonConfig);
 		}else{
-			parser = new JavaBeanParser(obj);
+			parser = new JavaBeanParser(obj, jsonConfig);
 		}
 		return parser;
 	}

@@ -1,11 +1,15 @@
 package org.icemimosa.xjson.parser;
 
-public abstract class AbstractJSONParser implements JSONParser {
-	
-	protected Object obj;
+import org.icemimosa.xjson.JsonConfig;
 
-	public AbstractJSONParser(Object obj) {
+public abstract class AbstractJSONParser implements JSONParser {
+
+	protected Object obj;
+	protected JsonConfig jsonConfig;
+
+	public AbstractJSONParser(Object obj, JsonConfig jsonConfig) {
 		this.obj = obj;
+		this.jsonConfig = jsonConfig;
 	}
-	
+
 }

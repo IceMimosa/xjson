@@ -3,10 +3,13 @@ package org.icemimosa.xjson.parser;
 import java.util.Map;
 import java.util.Set;
 
+import org.icemimosa.xjson.JsonConfig;
+import org.icemimosa.xjson.utils.ConstantManager;
+
 public class MapParser extends AbstractJSONParser{
 
-	public MapParser(Object obj) {
-		super(obj);
+	public MapParser(Object obj, JsonConfig jsonConfig) {
+		super(obj, jsonConfig);
 	}
 
 	@Override
@@ -21,13 +24,16 @@ public class MapParser extends AbstractJSONParser{
 		for (Map.Entry entry : entrySet) {
 			Object key = entry.getKey();
 			Object value = entry.getValue();
-			JSONParser keyParser = JSONParserFactory.getInstance().getParser(key);
-			JSONParser valueParser = JSONParserFactory.getInstance().getParser(value);
-			sb.append(keyParser.toJsonString()).append(":").append(valueParser.toJsonString()).append(",");
+			JSONParser keyParser = JSONParserFactory.getInstance().getParser(key, this.jsonConfig);
+			JSONParser valueParser = JSONParserFactory.getInstance().getParser(value, this.jsonConfig);
+			sb.append(ConstantManager.getPrettySymbol()).append(keyParser.toJsonString()).append(":").append(valueParser.toJsonString()).append(",");
 		}
 		String sbString = sb.toString();
 		if(sbString.endsWith(",")){
 			sbString = sbString.substring(0, sb.length() - 1);
+			if(jsonConfig.isPrettyFormat()){
+				sbString += ConstantManager.getEnterSymbol();
+			}
 		}
 		return sbString + "}";
 	}

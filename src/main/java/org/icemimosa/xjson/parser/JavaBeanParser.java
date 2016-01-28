@@ -6,10 +6,13 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.icemimosa.xjson.JsonConfig;
+import org.icemimosa.xjson.utils.ConstantManager;
+
 public class JavaBeanParser extends AbstractJSONParser {
 
-	public JavaBeanParser(Object obj) {
-		super(obj);
+	public JavaBeanParser(Object obj, JsonConfig jsonConfig) {
+		super(obj, jsonConfig);
 	}
 
 	@Override
@@ -38,13 +41,13 @@ public class JavaBeanParser extends AbstractJSONParser {
 				try {
 					getMethod.setAccessible(true);
 					// 变量名称的json串
-					JSONParser fieldNameParser = JSONParserFactory.getInstance().getParser(fieldName);
+					JSONParser fieldNameParser = JSONParserFactory.getInstance().getParser(fieldName, this.jsonConfig);
 					String fieldNameString = fieldNameParser.toJsonString();
 					// 值的json串
 					Object value = getMethod.invoke(obj);
-					JSONParser valueParser = JSONParserFactory.getInstance().getParser(value);
+					JSONParser valueParser = JSONParserFactory.getInstance().getParser(value, this.jsonConfig);
 					
-					sb.append(fieldNameString).append(":").append(valueParser.toJsonString()).append(",");
+					sb.append(ConstantManager.getPrettySymbol()).append(fieldNameString).append(":").append(valueParser.toJsonString()).append(",");
 					getMethod.setAccessible(false);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
@@ -54,6 +57,9 @@ public class JavaBeanParser extends AbstractJSONParser {
 		String sbString = sb.toString();
 		if(sbString.endsWith(",")){
 			sbString = sbString.substring(0, sb.length() - 1);
+			if(jsonConfig.isPrettyFormat()){
+				sbString += ConstantManager.getEnterSymbol();
+			}
 		}
 		return sbString + "}";
 	}

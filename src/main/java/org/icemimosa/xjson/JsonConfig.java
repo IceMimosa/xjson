@@ -4,6 +4,13 @@ import org.icemimosa.xjson.utils.ConstantManager;
 import org.icemimosa.xjson.utils.Constants;
 
 public class JsonConfig {
+
+	public JsonConfig() {
+		constantManager = new ConstantManager();
+	}
+
+	private ConstantManager constantManager;
+	
 	/**
 	 * 是否是单引号. true为单引号, false为双引号, 默认false
 	 */
@@ -14,16 +21,15 @@ public class JsonConfig {
 	 */
 	private boolean isPrettyFormat = false;
 	
-	
 	/**
 	 * 设置键和值的引号类型. 
 	 * @param isSingleQuote	---- true为单引号, false为双引号, 默认false
 	 */
 	public void setSingleQuote(boolean isSingleQuote) {
 		this.isSingleQuote = isSingleQuote;
-		ConstantManager.setQuote(Constants.DOUBLE_QUOTE);
+		constantManager.setQuote(Constants.DOUBLE_QUOTE);
 		if(isSingleQuote){
-			ConstantManager.setQuote(Constants.SINGLE_QUOTE);
+			constantManager.setQuote(Constants.SINGLE_QUOTE);
 		}
 	}
 	public boolean isSingleQuote() {
@@ -37,31 +43,40 @@ public class JsonConfig {
 	 * @param isPrettyFormat ---- true为漂亮输出, false为一行字符串输出, 默认false
 	 */
 	public void setPrettyFormat(boolean isPrettyFormat) {
-		this.setPrettyFormat(isPrettyFormat, 0);
+		this.setPrettyFormat(isPrettyFormat, 4);
 	}
 	
 	/**
 	 * 设置json的输出格式, 以及格式空格的数量
 	 * @param isPrettyFormat ---- true为漂亮输出, false为一行字符串输出, 默认false
-	 * @param blankCount ---- 等于或小于0为制表符 \t, 否则为空格的数量
+	 * @param blankCount ---- 小于0为制表符 \t, 否则为空格的数量
 	 */
 	public void setPrettyFormat(boolean isPrettyFormat, int blankCount) {
 		this.isPrettyFormat = isPrettyFormat;
 		StringBuilder symbol = new StringBuilder("");
 		if(isPrettyFormat){
 			symbol.append(Constants.ENTER);
-			if(blankCount <= 0){
+			// 小于0为制表符
+			if(blankCount < 0){
+				blankCount = -blankCount;
+				constantManager.setTabSymbol(true);
 				symbol.append(Constants.TAB);
 			}else{
+				constantManager.setTabSymbol(false);
 				for (int i = 0; i < blankCount; i++) {
-					symbol.append(" ");
+					symbol.append(Constants.BLANK);
 				}
 			}
 		}
-		ConstantManager.setPrettySymbol(symbol.toString());
+		constantManager.setPrettySymbol(symbol.toString());
+		constantManager.setPrettyBlankCount(blankCount);
 	}
 	
 	public boolean isPrettyFormat() {
 		return isPrettyFormat;
+	}
+	
+	public ConstantManager getConstantManager() {
+		return constantManager;
 	}
 }

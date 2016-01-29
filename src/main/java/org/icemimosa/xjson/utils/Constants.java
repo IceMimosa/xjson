@@ -26,4 +26,9 @@ public class Constants {
 	 * 制表符
 	 */
 	public static final String TAB = "\t";
+	
+	/**
+	 * 空白符
+	 */
+	public static final String BLANK = " ";
 }

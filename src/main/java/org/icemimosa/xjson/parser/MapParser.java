@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.icemimosa.xjson.JsonConfig;
-import org.icemimosa.xjson.utils.ConstantManager;
 
+@SuppressWarnings("all")
 public class MapParser extends AbstractJSONParser{
 
 	public MapParser(Object obj, JsonConfig jsonConfig) {
@@ -26,16 +26,10 @@ public class MapParser extends AbstractJSONParser{
 			Object value = entry.getValue();
 			JSONParser keyParser = JSONParserFactory.getInstance().getParser(key, this.jsonConfig);
 			JSONParser valueParser = JSONParserFactory.getInstance().getParser(value, this.jsonConfig);
-			sb.append(ConstantManager.getPrettySymbol()).append(keyParser.toJsonString()).append(":").append(valueParser.toJsonString()).append(",");
+			prettyFormat(sb, keyParser, valueParser);
 		}
-		String sbString = sb.toString();
-		if(sbString.endsWith(",")){
-			sbString = sbString.substring(0, sb.length() - 1);
-			if(jsonConfig.isPrettyFormat()){
-				sbString += ConstantManager.getEnterSymbol();
-			}
-		}
-		return sbString + "}";
+		
+		return deleteLastComma(sb.toString()) + "}";
 	}
-	
+
 }

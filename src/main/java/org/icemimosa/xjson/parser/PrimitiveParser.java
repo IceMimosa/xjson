@@ -1,7 +1,6 @@
 package org.icemimosa.xjson.parser;
 
 import org.icemimosa.xjson.JsonConfig;
-import org.icemimosa.xjson.utils.ConstantManager;
 
 public class PrimitiveParser extends AbstractJSONParser {
 
@@ -15,19 +14,13 @@ public class PrimitiveParser extends AbstractJSONParser {
 		if (obj == null) {
 			retValue = null;
 		} else if (obj instanceof String) {
-			retValue = ConstantManager.getQuote() + obj.toString() + ConstantManager.getQuote();
+			retValue = constantManager.getQuote() + obj.toString() + constantManager.getQuote();
 		} else if (obj.getClass() == char.class || obj instanceof Character) {
-			retValue = ConstantManager.getQuote() + obj.toString() + ConstantManager.getQuote();
+			retValue = constantManager.getQuote() + obj.toString() + constantManager.getQuote();
 		} else {
 			retValue = obj.toString();
 		}
-		return prettyFormatString(retValue);
+		return retValue;
 	}
 
-	private String prettyFormatString(String value) {
-		if (jsonConfig.isPrettyFormat()) {
-			return " " + value + " ";
-		}
-		return value;
-	}
 }

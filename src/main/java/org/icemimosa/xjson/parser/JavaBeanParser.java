@@ -1,12 +1,11 @@
 package org.icemimosa.xjson.parser;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.icemimosa.xjson.JsonConfig;
+import org.icemimosa.xjson.utils.TypeUtils;
 
 public class JavaBeanParser extends AbstractJSONParser {
 
@@ -21,21 +20,14 @@ public class JavaBeanParser extends AbstractJSONParser {
 		}
 		
 		// 通过反射获取所有的方法
-		Method[] methods = obj.getClass().getMethods();
-		Map<String, Method> methodMap = new HashMap<String, Method>();
-		for (int i = 0; methods != null && i < methods.length; i++) {
-			if(methods[i].getName().substring(0, 3).equalsIgnoreCase("get")){
-				methodMap.put(methods[i].getName().substring(3), methods[i]);
-			}
-		}
+		Map<String, Method> methodMap = TypeUtils.getObjectMethods(obj, jsonConfig);
 		
 		// 获取所有的成员变量
 		StringBuilder sb = new StringBuilder("{");
-		Field[] fields = obj.getClass().getDeclaredFields();
-		for (int i = 0; fields != null && i < fields.length; i++) {
-			String fieldName = fields[i].getName();
-			String getMethodName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-			Method getMethod = methodMap.get(getMethodName);
+		String[] fieldNames = TypeUtils.getObjectFieldNames(obj, jsonConfig);
+		for (int i = 0; fieldNames != null && i < fieldNames.length; i++) {
+			String fieldName = fieldNames[i];
+			Method getMethod = methodMap.get(fieldName);
 			if(getMethod != null){
 				try {
 					getMethod.setAccessible(true);
@@ -44,6 +36,7 @@ public class JavaBeanParser extends AbstractJSONParser {
 					// 值的json串
 					Object value = getMethod.invoke(obj);
 					JSONParser valueParser = JSONParserFactory.getInstance().getParser(value, this.jsonConfig);
+					
 					prettyFormat(sb, fieldNameParser, valueParser);
 					
 					getMethod.setAccessible(false);

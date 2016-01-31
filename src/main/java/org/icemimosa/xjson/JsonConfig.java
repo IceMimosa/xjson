@@ -11,6 +11,10 @@ public class JsonConfig {
 
 	private ConstantManager constantManager;
 	
+	public ConstantManager getConstantManager() {
+		return constantManager;
+	}
+	
 	/**
 	 * 是否是单引号. true为单引号, false为双引号, 默认false
 	 */
@@ -20,6 +24,11 @@ public class JsonConfig {
 	 * 是否将json串以漂亮的格式输出
 	 */
 	private boolean isPrettyFormat = false;
+	
+	/**
+	 * javabean属性过滤(暂不支持Map等的过滤)
+	 */
+	private String[] propertyFilters = {};
 	
 	/**
 	 * 设置键和值的引号类型. 
@@ -36,7 +45,6 @@ public class JsonConfig {
 		return isSingleQuote;
 	}
 	
-	
 	/**
 	 * 设置json的输出格式
 	 * 
@@ -47,7 +55,7 @@ public class JsonConfig {
 	}
 	
 	/**
-	 * 设置json的输出格式, 以及格式空格的数量
+	 * 设置json的输出格式, 以及格式空格的数量(默认空格数量为4)
 	 * @param isPrettyFormat ---- true为漂亮输出, false为一行字符串输出, 默认false
 	 * @param blankCount ---- 小于0为制表符 \t, 否则为空格的数量
 	 */
@@ -76,7 +84,15 @@ public class JsonConfig {
 		return isPrettyFormat;
 	}
 	
-	public ConstantManager getConstantManager() {
-		return constantManager;
+	/**
+	 * 设置javabean的属性过滤(暂不支持Map等的过滤)
+	 * @param propertyFilters
+	 */
+	public void setPropertyFilters(String[] propertyFilters) {
+		this.propertyFilters = propertyFilters;
+	}
+	
+	public String[] getPropertyFilters() {
+		return propertyFilters;
 	}
 }

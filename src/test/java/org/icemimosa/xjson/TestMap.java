@@ -16,11 +16,13 @@ public class TestMap {
 		list.add(p1);
 		list.add(p2);
 		
-		map.put(list, 1);
+		map.put("a", list);
 		map.put("b", "b");
 		map.put("c", 1);
 		
-		System.out.println(JSON.toJsonString(map));
+		JsonConfig jsonConfig = new JsonConfig();
+		jsonConfig.setPrettyFormat(true);
+		System.out.println(JSON.toJsonString(map,jsonConfig));
 	}
 }
 

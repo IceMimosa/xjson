@@ -14,8 +14,11 @@ public class TestPrimitive {
 		p.setDoubleValue(5.234);
 		p.setCharValue('a');
 		p.setBooleanValue(true);
-		
-		System.out.println(JSON.toJsonString(p));
+
+		JsonConfig jsonConfig = new JsonConfig();
+		jsonConfig.setPrettyFormat(true, 4);
+		jsonConfig.setPropertyFilters(new String[]{"isOk","booleanValue","n"});
+		System.out.println(JSON.toJsonString(p, jsonConfig));
 	}
 
 }
@@ -32,6 +35,17 @@ class Person {
 	private boolean booleanValue;
 
 	private String name;
+	private String n;
+	private boolean isOk;
+
+	
+	public String getN() {
+		return n;
+	}
+
+	public void setN(String n) {
+		this.n = n;
+	}
 
 	public byte getByteValue() {
 		return byteValue;
@@ -103,6 +117,14 @@ class Person {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isOk() {
+		return isOk;
+	}
+
+	public void setOk(boolean isOk) {
+		this.isOk = isOk;
 	}
 
 }

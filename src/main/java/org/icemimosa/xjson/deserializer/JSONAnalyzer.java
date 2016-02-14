@@ -2,7 +2,7 @@ package org.icemimosa.xjson.deserializer;
 
 public interface JSONAnalyzer {
 
-	
+	public final static int OTHER = -1;
 	public final static int UNKNOW = 0;
 	public final static int OGJECT = 1;
 	public final static int VALUE = 2;
@@ -15,5 +15,10 @@ public interface JSONAnalyzer {
 
 	public int nextToken();
 
-	
+	public void scanString();
+
+	public String getStringValue();
+
+	public int getCurrValueState();
+
 }

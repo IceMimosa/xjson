@@ -4,8 +4,8 @@ import java.lang.reflect.Type;
 
 public class PrimitiveDeserializer extends AbstractDeserialzer {
 
-	public PrimitiveDeserializer(String json, Type type) {
-		super(json, type);
+	public PrimitiveDeserializer(String json, Type type, JSONAnalyzer analyzer) {
+		super(json, type, analyzer);
 	}
 
 	@Override

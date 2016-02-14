@@ -3,8 +3,12 @@ package org.icemimosa.xjson.parser;
 import java.lang.reflect.Type;
 
 import org.icemimosa.xjson.JsonConfig;
+import org.icemimosa.xjson.deserializer.DefaultJSONAnalyzer;
+import org.icemimosa.xjson.deserializer.JSONAnalyzer;
 import org.icemimosa.xjson.deserializer.JSONDeserializer;
 import org.icemimosa.xjson.deserializer.JsonObjectDeserializer;
+import org.icemimosa.xjson.deserializer.PrimitiveDeserializer;
+import org.icemimosa.xjson.utils.StringUtils;
 import org.icemimosa.xjson.utils.TypeUtils;
 
 /**
@@ -40,7 +44,12 @@ public class JSONParserFactory {
 
 	public JSONDeserializer getDeserializer(String json, Type obj) {
 		JSONDeserializer deserializer = null;
-		deserializer = new JsonObjectDeserializer(json, obj);
+		JSONAnalyzer analyzer = new DefaultJSONAnalyzer(json);
+		if (StringUtils.isBlank(json)) {
+			deserializer = new PrimitiveDeserializer(json, obj, analyzer);
+		} else {
+			deserializer = new JsonObjectDeserializer(json, obj, analyzer);
+		}
 		return deserializer;
 	}
 }

@@ -45,9 +45,10 @@ public class JSONParserFactory {
 	public JSONDeserializer getDeserializer(String json, Type obj) {
 		JSONDeserializer deserializer = null;
 		JSONAnalyzer analyzer = new DefaultJSONAnalyzer(json);
+		char token = (char) analyzer.nextToken();
 		if (StringUtils.isBlank(json)) {
 			deserializer = new PrimitiveDeserializer(json, obj, analyzer);
-		} else {
+		} else if(token == '{'){
 			deserializer = new JsonObjectDeserializer(json, obj, analyzer);
 		}
 		return deserializer;

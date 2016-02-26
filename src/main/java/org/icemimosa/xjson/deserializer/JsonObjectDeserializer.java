@@ -14,30 +14,31 @@ public class JsonObjectDeserializer extends AbstractDeserialzer {
 	public Object deserialzer() {
 
 		JsonObject jsonObject = new JsonObject();
-		boolean isKey = true;
-		String key = null;
+		// 如果是空对象
+		if(analyzer.getCurrValueState() == JSONAnalyzer.END){
+			return jsonObject;
+		}
+		
+		String key = analyzer.getKey().toString();
 		for (;;) {
 			char ch = (char) analyzer.nextToken();
-			if (ch == '{') {
-				continue;
+			// 扫描key
+			if(ch == ','){
+				key = analyzer.getKey().toString();
 			}
-			if (analyzer.getCurrValueState() == JSONAnalyzer.VALUE) {
-				if (isKey) {
-					key = analyzer.getStringValue();
-				} else {
-					jsonObject.put(key, analyzer.getStringValue());
-					key = null;
-					isKey = true;
-				}
-				continue;
-			}
+			
+			// 扫描value
 			if (ch == ':') {
-				isKey = false;
-				if (key == null) {
-					key = analyzer.getStringValue();
+				if (analyzer.getCurrValueState() == JSONAnalyzer.VALUE) {
+					jsonObject.put(key, analyzer.getValue());
+				}
+				if (analyzer.getCurrValueState() == JSONAnalyzer.OBJECT) {
+					jsonObject.put(key, new JsonObjectDeserializer(json, type, analyzer).deserialzer());
 				}
 				continue;
 			}
+			
+			// json串结束
 			if (analyzer.getCurrValueState() == JSONAnalyzer.END) {
 				break;
 			}

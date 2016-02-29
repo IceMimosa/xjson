@@ -6,6 +6,7 @@ import org.icemimosa.xjson.utils.StringUtils;
 
 /**
  * 默认JSON串的解析类
+ * 
  * @author ChenKai[514793425@qq.com]
  */
 public class DefaultJSONAnalyzer implements JSONAnalyzer {
@@ -14,7 +15,7 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 	private int index;
 	private char currValue;
 	private int currValueState;
-	
+
 	private Object key;
 	private Object value;
 
@@ -39,7 +40,7 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 	public boolean hasNext() {
 		return index < chars.length;
 	}
-	
+
 	@Override
 	public int getCurrValueState() {
 		return currValueState;
@@ -83,7 +84,7 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 				scanKey();
 				break;
 			}
-			// 扫描结束 
+			// 扫描结束
 			if (ch == '}' || ch == ']') {
 				currValueState = END;
 				break;
@@ -103,16 +104,17 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 			currValueState = END;
 			return;
 		}
-		
+
 		// 如果key是字符串
 		if (currValue == '\"' || currValue == '\'') {
 			scanString();
 			key = stringValue;
-		} 
+		}
 		// 否则是不带引号的串
 		else {
 			int pos = index - 1;
-			StringBuilder sb = new StringBuilder("" + currValue);
+			StringBuilder sb = new StringBuilder();
+			sb.append(currValue);
 			while (next() != ':') {
 				sb.append(currValue);
 			}
@@ -133,20 +135,32 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 			scanString();
 		}
 		// null
-		else if(currValue == 'n'){
-			scanNULL();
+		else if (currValue == 'n') {
+			// scanNULL();
+			scanExpect("null");
 		}
 		// undefined
-		else if(currValue == 'u'){
-			scanUNDEFINED();
+		else if (currValue == 'u') {
+			// scanUNDEFINED();
+			scanExpect("undefined");
+		}
+		// true
+		else if (currValue == 't') {
+			// scanTRUE();
+			scanExpect("true");
+		}
+		// false
+		else if (currValue == 'f') {
+			// scanFALSE();
+			scanExpect("false");
 		}
 		// json对象
-		else if(currValue == '{'){
+		else if (currValue == '{') {
 			currValueState = OBJECT;
 			scanKey();
 		}
 	}
-	
+
 	@Override
 	public Object getValue() {
 		return value;
@@ -154,8 +168,10 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 
 	private void scanString() {
 		StringBuilder sb = new StringBuilder();
+		sb.append(currValue);
 		for (;;) {
 			char ch = (char) next();
+			sb.append(ch);
 			// 如果值在双引号内
 			if (currValue == '\"' && ch == '\"') {
 				break;
@@ -164,58 +180,48 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 			else if (currValue == '\'' && ch == '\'') {
 				break;
 			}
-			sb.append(ch);
 		}
 		value = stringValue = sb.toString();
 	}
-	
-	private void scanNULL() {
-		if(next() != 'u'){
-			throw new JsonException("符号错误, 期望值为 null, 位置 : " + (index - 1));
+
+	/**
+	 * 扫面所期望的字符串
+	 * 
+	 * @param expect
+	 *            如null,undefined,true,false
+	 */
+	private void scanExpect(String expect) {
+
+		if (StringUtils.isBlank(expect)) {
+			return;
 		}
-		if(next() != 'l'){
-			throw new JsonException("符号错误, 期望值为 null, 位置 : " + (index - 1));
+
+		// 1. 判断所期望的字符串
+		for (int i = 1; i < expect.length(); i++) {
+			char nChar = (char) next();
+			if (nChar != expect.charAt(i)) {
+				throw new JsonException("符号 [ " + nChar + " ] 错误, 期望值为 " + expect + "," //
+						+ "位置 : " + (index - 1) + ", "//
+						+ StringUtils.getErrorString(json, index - 1, index));
+			}
 		}
-		if(next() != 'l'){
-			throw new JsonException("符号错误, 期望值为 null, 位置 : " + (index - 1));
+
+		// 2. 去除空白符
+		char nChar = (char) next();
+		while (("" + nChar).matches("\\s")) {
+			nChar = (char) next();
+			continue;
 		}
-		while(next() != ','){
-			throw new JsonException("符号错误, 期望值为 null, 位置 : " + (index - 1));
+
+		// 3. 判断是否到达结尾
+		if (nChar != ',' && nChar != '}' && nChar != ']') {
+			System.out.println();
+			throw new JsonException("符号 [ " + nChar + " ] 错误, 期望值为 " + expect + "," //
+					+ "位置 : " + (index - 1) + ", "//
+					+ StringUtils.getErrorString(json, index - 1, index));
 		}
-		index --;
-		value = null;
-	}
-	
-	private void scanUNDEFINED() {
-		if(next() != 'n'){
-			throw new JsonException("符号错误, 期望值为 undefined, 位置 : " + (index - 1));
-		}
-		if(next() != 'd'){
-			throw new JsonException("符号错误, 期望值为 undefined, 位置 : " + (index - 1));
-		}
-		if(next() != 'e'){
-			throw new JsonException("符号错误, 期望值为 undefined, 位置 : " + (index - 1));
-		}
-		if(next() != 'f'){
-			throw new JsonException("符号错误, 期望值为 undefined, 位置 : " + (index - 1));
-		}
-		if(next() != 'i'){
-			throw new JsonException("符号错误, 期望值为 undefined, 位置 : " + (index - 1));
-		}
-		if(next() != 'n'){
-			throw new JsonException("符号错误, 期望值为 undefined, 位置 : " + (index - 1));
-		}
-		if(next() != 'e'){
-			throw new JsonException("符号错误, 期望值为 undefined, 位置 : " + (index - 1));
-		}
-		if(next() != 'd'){
-			throw new JsonException("符号错误, 期望值为 undefined, 位置 : " + (index - 1));
-		}
-		while(next() != ','){
-			throw new JsonException("符号错误, 期望值为 undefined, 位置 : " + (index - 1));
-		}
-		index --;
-		value = null;
+		index--;
+		value = expect;
 	}
 
 	/**
@@ -242,11 +248,16 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 		for (int i = 0; i < key.length(); i++) {
 			// 开头不能为其他字符
 			if (i == 0 && !("" + key.charAt(i)).matches("[a-zA-z_$]")) {
-				throw new JsonException("符号 [" + key.charAt(i) + "] 错误, 位置 : " + (pos + i));
+				throw new JsonException("符号 [" + key.charAt(i) + "] 错误, " //
+						+ "位置 : " + (pos + i) + ", 不支持的 [符号, 对象, 数组] 类型, " //
+						+ StringUtils.getErrorString(json, pos + i, pos + i + 1));
+
 			}
 			// 不能含有特殊字符
 			if (!("" + key.charAt(i)).matches("[\\w_$]")) {
-				throw new JsonException("符号 [" + key.charAt(i) + "] 错误, 位置 : " + (pos + i));
+				throw new JsonException("符号 [" + key.charAt(i) + "] 错误, " //
+						+ "位置 : " + (pos + i) + ", 不支持的 [符号, 对象, 数组] 类型, " //
+						+ StringUtils.getErrorString(json, pos + i, pos + i + 1));
 			}
 		}
 		return key;

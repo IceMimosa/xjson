@@ -22,6 +22,7 @@ public class JsonObjectDeserializer extends AbstractDeserialzer {
 		String key = analyzer.getKey().toString();
 		for (;;) {
 			char ch = (char) analyzer.nextToken();
+			
 			// 扫描key
 			if(ch == ','){
 				key = analyzer.getKey().toString();

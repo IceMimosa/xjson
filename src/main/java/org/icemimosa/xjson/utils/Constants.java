@@ -17,6 +17,8 @@ public class Constants {
 	public static final String TAB = "\t";
 	/** 空白符 */
 	public static final String BLANK = " ";
+	/** 点号 */
+	public static final String DOT = ".";
 	/** 逗号 */
 	public static final String COMMA = ",";
 	/** 冒号 */
@@ -43,6 +45,8 @@ public class Constants {
 		public static final char SINGLE_QUOTE = '\'';
 		/** 冒号 */
 		public static final char COLON = ':';
+		/** 点号 */
+		public static final char DOT = '.';
 		/** 逗号 */
 		public static final char COMMA = ',';
 		/** 左大括号 */
@@ -53,6 +57,5 @@ public class Constants {
 		public static final char L_SQUARE = '[';
 		/** 右方括号 */
 		public static final char R_SQUARE = ']';
-
 	}
 }

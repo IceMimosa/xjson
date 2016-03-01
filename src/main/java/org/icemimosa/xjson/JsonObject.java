@@ -1,5 +1,6 @@
 package org.icemimosa.xjson;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -9,8 +10,10 @@ import java.util.Set;
 /**
  * @author ChenKai[514793425@qq.com]
  */
-public class JsonObject implements Map<String, Object> {
+public class JsonObject implements Map<String, Object>, Serializable {
 
+	private static final long serialVersionUID = -1671008967652901785L;
+	
 	private final Map<String, Object> map;
 
 	public JsonObject() {

@@ -73,7 +73,7 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 			// 扫描值
 			if (ch == ':') {
 				currValueState = VALUE;
-				while (String.valueOf(next()).matches("\\s")) {
+				while (String.valueOf((char)next()).matches("\\s")) {
 				}
 				scanValue();
 				break;
@@ -154,10 +154,20 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 			// scanFALSE();
 			scanExpect("false");
 		}
+		// 数字
+		else if (("" + currValue).matches("[0-9.]")) {
+			scanNumber();
+		}
 		// json对象
 		else if (currValue == '{') {
 			currValueState = OBJECT;
 			scanKey();
+		}
+		// 非法字符
+		else {
+			throw new JsonException("符号 [ " + currValue + " ] 错误" //
+					+ "位置 : " + (index - 1) + ", "//
+					+ StringUtils.getErrorString(json, index - 1, index));
 		}
 	}
 
@@ -166,6 +176,9 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 		return value;
 	}
 
+	/**
+	 * 扫描字符串格式
+	 */
 	private void scanString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(currValue);
@@ -215,13 +228,60 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 
 		// 3. 判断是否到达结尾
 		if (nChar != ',' && nChar != '}' && nChar != ']') {
-			System.out.println();
 			throw new JsonException("符号 [ " + nChar + " ] 错误, 期望值为 " + expect + "," //
 					+ "位置 : " + (index - 1) + ", "//
 					+ StringUtils.getErrorString(json, index - 1, index));
 		}
 		index--;
 		value = expect;
+	}
+
+	/**
+	 * 扫描数字格式
+	 */
+	private void scanNumber() {
+		StringBuilder sb = new StringBuilder();
+		// 小数点数量
+		int dotCount = 0;
+		// 空白符是否合法
+		int blankIndex = -1;
+		
+		while (currValue != ',' && currValue != '}' && currValue != ']') {
+			// 1. 跳过空白符
+			if (("" + currValue).matches("\\s")) {
+				blankIndex = index;
+				next();
+				continue;
+			}
+			// 2. 记录小数点
+			if (currValue == '.') {
+				if (dotCount > 1) {
+					throw new JsonException("符号 [ " + currValue + " ] 错误" //
+							+ "位置 : " + (index - 1) + ", "//
+							+ StringUtils.getErrorString(json, index - 1, index));
+				}
+				dotCount++;
+				sb.append(currValue);
+				next();
+				continue;
+			}
+			// 3. 非数字字符验证
+			if (!("" + currValue).matches("[0-9]")) {
+				throw new JsonException("符号 [ " + currValue + " ] 错误, 期望值为数字" //
+						+ "位置 : " + (index - 1) + ", "//
+						+ StringUtils.getErrorString(json, index - 1, index));
+			}
+			// 4. 是否空白符非法
+			if (blankIndex != -1) {
+				throw new JsonException("符号错误, 期望值为数字" //
+						+ "位置 : " + (index - 2) + ", "//
+						+ StringUtils.getErrorString(json, index - 2, index - 1));
+			}
+			sb.append(currValue);
+			next();
+		}
+		index--;
+		value = sb.toString();
 	}
 
 	/**

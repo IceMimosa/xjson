@@ -5,6 +5,9 @@
 .project
 .class
 
+# test files
+/src/test
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

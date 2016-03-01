@@ -6,6 +6,7 @@ import org.icemimosa.xjson.JsonConfig;
 import org.icemimosa.xjson.deserializer.DefaultJSONAnalyzer;
 import org.icemimosa.xjson.deserializer.JSONAnalyzer;
 import org.icemimosa.xjson.deserializer.JSONDeserializer;
+import org.icemimosa.xjson.deserializer.JsonArrayDeserializer;
 import org.icemimosa.xjson.deserializer.JsonObjectDeserializer;
 import org.icemimosa.xjson.deserializer.PrimitiveDeserializer;
 import org.icemimosa.xjson.utils.StringUtils;
@@ -48,8 +49,10 @@ public class JSONParserFactory {
 		char token = (char) analyzer.nextToken();
 		if (StringUtils.isBlank(json)) {
 			deserializer = new PrimitiveDeserializer(json, obj, analyzer);
-		} else if(token == '{'){
+		} else if (token == '{') {
 			deserializer = new JsonObjectDeserializer(json, obj, analyzer);
+		} else if (token == '[') {
+			deserializer = new JsonArrayDeserializer(json, obj, analyzer);
 		}
 		return deserializer;
 	}

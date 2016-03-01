@@ -7,6 +7,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+/**
+ * JsonArray类
+ * 
+ * @author ChenKai[514793425@qq.com]
+ */
 public class JsonArray implements List<Object>, Serializable {
 
 	private static final long serialVersionUID = -5994549005614121737L;
@@ -136,4 +141,8 @@ public class JsonArray implements List<Object>, Serializable {
 		return list.subList(fromIndex, toIndex);
 	}
 
+	@Override
+	public String toString() {
+		return list.toString();
+	}
 }

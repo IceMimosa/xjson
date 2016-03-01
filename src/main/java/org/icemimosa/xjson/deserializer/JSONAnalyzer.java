@@ -9,21 +9,22 @@ public interface JSONAnalyzer {
 	public final static int ARRAY = 3;
 	public final static int END = 4;
 
-	public int next();
-
 	public boolean hasNext();
+	public int next();
+	public int getCurrValueState();
 
+	// 下一个json分隔符
 	public int nextToken();
-	
 	
 	// key
 	public void scanKey();
 	public Object getKey();
 	
-
+	// value
 	public void scanValue();
 	public Object getValue();
-
-	public int getCurrValueState();
-
+	
+	// List
+	public void scanArrayValue();
+	public Object getArrayValue();
 }

@@ -17,6 +17,17 @@ public class JSON {
 
 	public static JsonObject parseObject(String json) {
 		JSONDeserializer deserializer = JSONParserFactory.getInstance().getDeserializer(json, JsonObject.class);
+		if (deserializer == null) {
+			return new JsonObject();
+		}
 		return (JsonObject) deserializer.deserialzer();
+	}
+
+	public static JsonArray parseArray(String json) {
+		JSONDeserializer deserializer = JSONParserFactory.getInstance().getDeserializer(json, JsonObject.class);
+		if (deserializer == null) {
+			return new JsonArray();
+		}
+		return (JsonArray) deserializer.deserialzer();
 	}
 }

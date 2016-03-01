@@ -36,6 +36,9 @@ public class JsonObjectDeserializer extends AbstractDeserialzer {
 				if (analyzer.getCurrValueState() == JSONAnalyzer.OBJECT) {
 					jsonObject.put(key, new JsonObjectDeserializer(json, type, analyzer).deserialzer());
 				}
+				if (analyzer.getCurrValueState() == JSONAnalyzer.ARRAY) {
+					jsonObject.put(key, new JsonArrayDeserializer(json, type, analyzer).deserialzer());
+				}
 				continue;
 			}
 

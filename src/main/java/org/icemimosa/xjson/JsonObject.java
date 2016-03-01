@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * JsonObject类
  * @author ChenKai[514793425@qq.com]
  */
 public class JsonObject implements Map<String, Object>, Serializable {

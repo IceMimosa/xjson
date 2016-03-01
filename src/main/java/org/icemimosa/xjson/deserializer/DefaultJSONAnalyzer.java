@@ -16,8 +16,11 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 	private char currValue;
 	private int currValueState;
 
+	private int currOperValueState;
+
 	private Object key;
 	private Object value;
+	private Object arrayValue;
 
 	private String stringValue;
 
@@ -63,17 +66,20 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 			// 如果是对象, 扫描一次key
 			if (ch == '{') {
 				currValueState = OBJECT;
+				currOperValueState = OBJECT;
 				scanKey();
 				break;
 			}
 			if (ch == '[') {
 				currValueState = ARRAY;
+				currOperValueState = ARRAY;
+				scanArrayValue();
 				break;
 			}
 			// 扫描值
 			if (ch == ':') {
 				currValueState = VALUE;
-				while (String.valueOf((char)next()).matches("\\s")) {
+				while (String.valueOf((char) next()).matches("\\s")) {
 				}
 				scanValue();
 				break;
@@ -81,7 +87,11 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 			// 扫描下一组, 扫描一次key
 			if (ch == ',') {
 				currValueState = OTHER;
-				scanKey();
+				if (currOperValueState == OBJECT) {
+					scanKey();
+				} else if (currOperValueState == ARRAY) {
+					scanArrayValue();
+				}
 				break;
 			}
 			// 扫描结束
@@ -96,7 +106,7 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 	@Override
 	public void scanKey() {
 		// 取出空白符
-		while (String.valueOf(next()).matches("\\s")) {
+		while (String.valueOf((char)(next())).matches("\\s")) {
 		}
 
 		// 如果到了结尾
@@ -115,7 +125,18 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 			int pos = index - 1;
 			StringBuilder sb = new StringBuilder();
 			sb.append(currValue);
+			// 这里会出现死循环, 优化
 			while (next() != ':') {
+				if (currValue == ',') {
+					throw new JsonException("符号 [ " + currValue + " ] 错误, 缺少相应的value值" //
+							+ "位置 : " + (index - 1) + ", "//
+							+ StringUtils.getErrorString(json, index - 1, index));
+				}
+				if (!("" + currValue).matches("[\\w_$]")) {
+					throw new JsonException("符号 [ " + currValue + " ] 错误" //
+							+ "位置 : " + (index - 1) + ", "//
+							+ StringUtils.getErrorString(json, index - 1, index));
+				}
 				sb.append(currValue);
 			}
 			index--;
@@ -161,7 +182,12 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 		// json对象
 		else if (currValue == '{') {
 			currValueState = OBJECT;
+			currOperValueState = OBJECT;
 			scanKey();
+		} else if (currValue == '[') {
+			currValueState = ARRAY;
+			currOperValueState = ARRAY;
+			scanArrayValue();
 		}
 		// 非法字符
 		else {
@@ -174,6 +200,62 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 	@Override
 	public Object getValue() {
 		return value;
+	}
+
+	@Override
+	public void scanArrayValue() {
+		// 取出空白符
+		while (String.valueOf((char)(next())).matches("\\s")) {
+		}
+
+		// 如果到了结尾
+		if (currValue == '}' || currValue == ']') {
+			currValueState = END;
+			return;
+		}
+
+		// 如果是字符串
+		if (currValue == '\"' || currValue == '\'') {
+			currValueState = VALUE;
+			scanString();
+		}
+		// null
+		else if (currValue == 'n') {
+			currValueState = VALUE;
+			scanExpect("null");
+		}
+		// undefined
+		else if (currValue == 'u') {
+			currValueState = VALUE;
+			scanExpect("undefined");
+		}
+		// true
+		else if (currValue == 't') {
+			currValueState = VALUE;
+			scanExpect("true");
+		}
+		// false
+		else if (currValue == 'f') {
+			currValueState = VALUE;
+			scanExpect("false");
+		}
+		// 数字
+		else if (("" + currValue).matches("[0-9.]")) {
+			currValueState = VALUE;
+			scanNumber();
+		}
+		// JsonObject
+		else if (currValue == '{') {
+			currValueState = OBJECT;
+			currOperValueState = OBJECT;
+			scanKey();
+		}
+		arrayValue = value;
+	}
+
+	@Override
+	public Object getArrayValue() {
+		return arrayValue;
 	}
 
 	/**
@@ -245,7 +327,7 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 		int dotCount = 0;
 		// 空白符是否合法
 		int blankIndex = -1;
-		
+
 		while (currValue != ',' && currValue != '}' && currValue != ']') {
 			// 1. 跳过空白符
 			if (("" + currValue).matches("\\s")) {
@@ -322,5 +404,4 @@ public class DefaultJSONAnalyzer implements JSONAnalyzer {
 		}
 		return key;
 	}
-
 }
